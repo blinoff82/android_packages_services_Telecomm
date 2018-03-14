@@ -16,17 +16,23 @@
 
 package com.android.server.telecom.components;
 
+import android.Manifest;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.IAudioService;
 import android.media.ToneGenerator;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.telecom.Log;
+import android.telecom.PhoneAccount;
+import android.text.TextUtils;
 
 import com.android.internal.telephony.CallerInfoAsyncQuery;
 import com.android.server.telecom.AsyncRingtonePlayer;
@@ -35,6 +41,7 @@ import com.android.server.telecom.BluetoothPhoneServiceImpl;
 import com.android.server.telecom.CallerInfoAsyncQueryFactory;
 import com.android.server.telecom.CallsManager;
 import com.android.server.telecom.ClockProxy;
+import com.android.server.telecom.Constants;
 import com.android.server.telecom.DefaultDialerCache;
 import com.android.server.telecom.HeadsetMediaButton;
 import com.android.server.telecom.HeadsetMediaButtonFactory;
@@ -57,6 +64,8 @@ import com.android.server.telecom.ui.NotificationChannelManager;
  * Implementation of the ITelecom interface.
  */
 public class TelecomService extends Service implements TelecomSystem.Component {
+
+    private BroadcastReceiver receiver;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -184,5 +193,47 @@ public class TelecomService extends Service implements TelecomSystem.Component {
     @Override
     public TelecomSystem getTelecomSystem() {
         return TelecomSystem.getInstance();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        registerPrimaryCallReceiver();
+    }
+
+    private void registerPrimaryCallReceiver() {
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.startSession("PCR.oR");
+                synchronized (getTelecomSystem().getLock()) {
+                    if (TextUtils.equals(Constants.TELECOMM_PACKAGE, intent.getPackage())
+                            && (intent.getFlags() & Intent.FLAG_RECEIVER_REGISTERED_ONLY) != 0) {
+                        getTelecomSystem().getCallIntentProcessor().processIntent(intent);
+                    }
+                }
+                Log.endSession();
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_CALL);
+        filter.addDataScheme(PhoneAccount.SCHEME_TEL);
+        filter.addDataScheme(PhoneAccount.SCHEME_SIP);
+        filter.addDataScheme(PhoneAccount.SCHEME_VOICEMAIL);
+        registerReceiverAsUser(receiver, UserHandle.ALL,
+                filter, Manifest.permission.MODIFY_PHONE_STATE, null);
+    }
+
+    private void unRegisterPrimaryCallReceiver() {
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        unRegisterPrimaryCallReceiver();
+        super.onDestroy();
     }
 }

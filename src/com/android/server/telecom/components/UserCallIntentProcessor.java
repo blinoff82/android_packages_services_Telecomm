@@ -17,6 +17,7 @@
 package com.android.server.telecom.components;
 
 import com.android.server.telecom.CallIntentProcessor;
+import com.android.server.telecom.Constants;
 import com.android.server.telecom.R;
 import com.android.server.telecom.TelephonyUtil;
 import com.android.server.telecom.UserUtil;
@@ -179,7 +180,8 @@ public class UserCallIntentProcessor {
     private boolean sendBroadcastToReceiver(Intent intent) {
         intent.putExtra(CallIntentProcessor.KEY_IS_INCOMING_CALL, false);
         intent.setFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        intent.setClass(mContext, PrimaryCallReceiver.class);
+        intent.setPackage(Constants.TELECOMM_PACKAGE);
+        intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         Log.d(this, "Sending broadcast as user to CallReceiver");
         mContext.sendBroadcastAsUser(intent, UserHandle.SYSTEM);
         return true;
