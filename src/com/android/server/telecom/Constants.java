@@ -29,6 +29,4 @@ public class Constants {
     //
 
     public static final String SCHEME_SMSTO = "smsto";
-
-    public static final String TELECOMM_PACKAGE = "com.android.server.telecom";
 }
