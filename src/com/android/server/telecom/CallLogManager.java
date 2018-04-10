@@ -231,10 +231,9 @@ public final class CallLogManager extends CallsManagerListenerBase {
                 (call.getConnectionProperties() & Connection.PROPERTY_ASSISTED_DIALING_USED) ==
                         Connection.PROPERTY_ASSISTED_DIALING_USED);
         logCall(call.getCallerInfo(), logNumber, call.getPostDialDigits(), formattedViaNumber,
-                call.getHandlePresentation(), imsCallLogEnabled ?
-                toPreciseLogType(call, callLogType) : callLogType, callFeatures,
-                accountHandle, creationTime, age, callDataUsage, call.isEmergencyCall(),
-                call.getInitiatingUser(), logCallCompletedListener);
+                call.getHandlePresentation(), callLogType, callFeatures, accountHandle,
+                creationTime, age, callDataUsage, call.isEmergencyCall(), call.getInitiatingUser(),
+                logCallCompletedListener);
     }
 
     /**
