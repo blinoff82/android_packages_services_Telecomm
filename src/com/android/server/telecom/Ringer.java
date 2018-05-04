@@ -18,6 +18,7 @@ package com.android.server.telecom;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.os.VibrationEffect;
 import android.telecom.Log;
@@ -25,14 +26,12 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.UserHandle;
 import android.os.Vibrator;
+import android.provider.Settings;
 
 import com.android.internal.annotations.VisibleForTesting;
-<<<<<<< HEAD
-import import com.android.internal.util.du.Utils;
-=======
 import com.android.internal.util.du.Utils;
->>>>>>> de58fbc0... Added features flash-call-on-waiting [2/3]
 
 /**
  * Controls the ringtone player.
