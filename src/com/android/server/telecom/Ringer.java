@@ -28,7 +28,11 @@ import android.os.Bundle;
 import android.os.Vibrator;
 
 import com.android.internal.annotations.VisibleForTesting;
+<<<<<<< HEAD
 import import com.android.internal.util.du.Utils;
+=======
+import com.android.internal.util.du.Utils;
+>>>>>>> de58fbc0... Added features flash-call-on-waiting [2/3]
 
 /**
  * Controls the ringtone player.
